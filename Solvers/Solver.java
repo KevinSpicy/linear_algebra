@@ -1,58 +1,50 @@
 package Solvers;
-import Matrices.*
 
-public enum SolverId
-{
-	GAUSS
-}
+import Matrices.*;
+import MatrixExceptions.SizeOfMatrixException;
 
-public enum SolutionID
-{
-	SINGLE, INFINITE, NONE
-}
+public abstract class Solver {
+    public enum SolutionId {
+        SINGLE, INFINITE, NONE
+    }
 
-public abstract class Solver
-{
-	protected MatrixR solveVector;
-	protected MatrixR kernelMatrix;
-	protected int[]   permVars;
-	protected int     cntVars;
+    public enum SolverId {
+        GAUSS
+    }
 
-	public MatrixR getSolveVector()
-	{
-		return solveVector;
-	}
+    protected MatrixR solveVector;
+    protected MatrixR kernelMatrix;
+    protected int[] permVars;
+    protected int cntVars;
 
-	public MatrixR getKernelMatrix()
-	{
-		return kernelMatrix;
-	}
+    public MatrixR getSolveVector() {
+        return solveVector;
+    }
 
-	public int getCntVars()
-	{
-		return cntVars;
-	}
+    public MatrixR getKernelMatrix() {
+        return kernelMatrix;
+    }
 
-	public void getPermVars(int[] buff)
-	{
-		buff = new int[cntVars + 1];
+    public int getCntVars() {
+        return cntVars;
+    }
 
-		for(int i = 0; i < cntVars + 1; ++i)
-		{
-			buff[i] = permVars[i];
-		}
-	}
+    public void getPermVars(int[] buff) {
+        buff = new int[cntVars + 1];
 
-	public abstract void solve(MatrixR mat, MatrixR rightPart);
+        for (int i = 0; i < cntVars + 1; ++i) {
+            buff[i] = permVars[i];
+        }
+    }
 
-	static Solver createSolver(SolverId id)
-	{
-		switch(id)
-		{
-			case GAUSS:
-				return null;
-			default:
-				return null;
-		}
-	}
+    public abstract SolutionId solve(MatrixR mat, MatrixR rightPart) throws SizeOfMatrixException;
+
+    public static Solver createSolver(SolverId id) {
+        switch (id) {
+            case GAUSS:
+                return new GaussSolver();
+            default:
+                return new GaussSolver();
+        }
+    }
 } 

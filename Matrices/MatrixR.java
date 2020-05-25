@@ -1,300 +1,243 @@
 package Matrices;
 
 import Numbers.Rational;
+import MatrixExceptions.SizeOfMatrixException;
 
-public class MatrixR
-{
-	protected Rational[][] array;
-	protected int sizeX;
-	protected int sizeY;
-	protected int rank;
+public class MatrixR {
+    protected Rational[][] array;
+    protected int sizeX;
+    protected int sizeY;
+    protected int rank;
 
-	public MatrixR(int _sizeY, int _sizeX)
-	{
-		if(_sizeX > 0 && _sizeY > 0)
-		{
-			sizeX = _sizeX;
-			sizeY = _sizeY;
-			rank  = 0;
-			array = new Rational[_sizeY][_sizeX];
-			
-			this.clear();
-		}
-		else
-		{
-			//Exception
-		}
-	}
+    public MatrixR(int _sizeY, int _sizeX) throws SizeOfMatrixException {
+        if (_sizeX > 0 && _sizeY > 0) {
+            sizeX = _sizeX;
+            sizeY = _sizeY;
+            rank = 0;
+            array = new Rational[_sizeY][_sizeX];
 
-	public MatrixR()
-	{
-		this(1,1);
-	}
+            this.clear();
+        } else {
+            throw new SizeOfMatrixException("MatrixR.MatrixR(int, int): Incorrect sizes of matrix");
+        }
+    }
 
-	public MatrixR(MatrixR o)
-	{
-		assign(o);
-	}
+    public MatrixR()  {
+        sizeX = 1;
+        sizeY = 1;
+        rank = 0;
+        array = new Rational[1][1];
 
+        this.clear();
+    }
 
-	public void assign(MatrixR o)
-	{
-		sizeX = o.sizeX;
-		sizeY = o.sizeY;
-		rank  = o.rank;
-		Rational[][] _array = new Rational[sizeY][sizeX];
+    public MatrixR(MatrixR o) {
+        assign(o);
+    }
 
-		for(int i = 0; i < sizeY; ++i)
-		{
-			for(int j = 0; j < sizeX; ++j)
-			{
-				_array[i][j] = new Rational(o.array[i][j]);
-			}
-		}
+    public void assign(MatrixR o) {
+        sizeX = o.sizeX;
+        sizeY = o.sizeY;
+        rank = o.rank;
+        Rational[][] _array = new Rational[sizeY][sizeX];
 
-		this.array = _array;
-	}
+        for (int i = 0; i < sizeY; ++i) {
+            for (int j = 0; j < sizeX; ++j) {
+                _array[i][j] = new Rational(o.array[i][j]);
+            }
+        }
 
-	public Rational at(int i, int j)
-	{
-		if((i < 0 && i >= sizeY) || (j < 0 && j >= sizeX))
-		{
-			//Exception
-		}
-		
-		return array[i][j];
-	}
+        this.array = _array;
+    }
 
-	public void set(int i, int j, Rational o)
-	{
-		if((i < 0 && i >= sizeY) || (j < 0 && j >= sizeX))
-		{
-			//Exception
-		}
+    public Rational at(int i, int j) {
+        if ((i < 0 && i >= sizeY) || (j < 0 && j >= sizeX)) {
+            throw new ArrayIndexOutOfBoundsException("MatrixR.at(int, int): Indices out of bounds");
+        }
 
-		array[i][j].assign(o);
-	}
+        return array[i][j];
+    }
 
-	public void set(int i, int j, long o)
-	{
-		this.set(i, j, new Rational(o));
-	}
+    public void set(int i, int j, Rational o) {
+        if ((i < 0 && i >= sizeY) || (j < 0 && j >= sizeX)) {
+            throw new ArrayIndexOutOfBoundsException("MatrixR.set(int, int, Rational): Indices out of bounds");
+        }
 
-	public MatrixR multiply(Rational o)
-	{
-		MatrixR _mat = new MatrixR(sizeY, sizeX);
+        array[i][j].assign(o);
+    }
 
-		for(int i = 0; i < sizeY; ++i)
-		{
-			for(int j = 0; j < sizeX; ++j)
-			{
-				_mat.array[i][j] = array[i][j].multiply(o);
-			}
-		}
+    public void set(int i, int j, long o) {
+        this.set(i, j, new Rational(o));
+    }
 
-		return _mat;
-	}
+    public MatrixR multiply(Rational o) throws SizeOfMatrixException {
+        MatrixR _mat = new MatrixR(sizeY, sizeX);
 
-	public MatrixR multiply(long o)
-	{
-		return this.multiply(new Rational(o));
-	}
+        for (int i = 0; i < sizeY; ++i) {
+            for (int j = 0; j < sizeX; ++j) {
+                _mat.array[i][j] = array[i][j].multiply(o);
+            }
+        }
 
-	public MatrixR multiply(MatrixR o)
-	{
-		if(sizeX != o.sizeY)
-		{
-			//Exception
-		}
+        return _mat;
+    }
 
-		MatrixR _mat = new MatrixR(sizeY, o.sizeX);
-		Rational _r = new Rational(0);
+    public MatrixR multiply(long o) throws SizeOfMatrixException {
+        return this.multiply(new Rational(o));
+    }
 
-		for(int i = 0; i < _mat.sizeY; ++i)
-		{
-			for(int j = 0; j < _mat.sizeX; ++j)
-			{
-				_r.assign(0);
-				for(int k = 0; k < sizeX; ++k)
-				{
-					_r = _r.plus( array[i][k].multiply(o.array[k][j]) );
-				}
-				
-				_mat.array[i][j].assign(_r);
-			}
-		}
+    public MatrixR multiply(MatrixR o) throws SizeOfMatrixException {
+        if (sizeX != o.sizeY) {
+           throw new SizeOfMatrixException("MatrixR.multiply(MatrixR): Sizes of matrices mismatches");
+        }
 
-		return _mat;
-	}
+        MatrixR _mat = new MatrixR(sizeY, o.sizeX);
+        Rational _r = new Rational(0);
 
-	public boolean equals(MatrixR o)
-	{
-		if(sizeX != o.sizeX || sizeY != o.sizeY)
-		{
-			//Exception
-		}
+        for (int i = 0; i < _mat.sizeY; ++i) {
+            for (int j = 0; j < _mat.sizeX; ++j) {
+                _r.assign(0);
+                for (int k = 0; k < sizeX; ++k) {
+                    _r = _r.plus(array[i][k].multiply(o.array[k][j]));
+                }
 
-		for(int i = 0; i < sizeY; ++i)
-		{
-			for(int j = 0; j < sizeX; ++j)
-			{
-				if(!array[i][j].equals(o.array[i][j]))
-				{
-					return false;
-				}
-			}
-		}
+                _mat.array[i][j].assign(_r);
+            }
+        }
 
-		return true;
-	}
+        return _mat;
+    }
 
-	public MatrixR plus(MatrixR o)
-	{
-		if(sizeX != o.sizeX || sizeY != o.sizeY)
-		{
-			//Exception
-		}
-		
-		MatrixR _mat = new MatrixR(sizeY, sizeX);
+    public boolean equals(MatrixR o) {
+        if (sizeX != o.sizeX || sizeY != o.sizeY) {
+            return false;
+        }
 
-		for(int i = 0; i < sizeY; ++i)
-		{
-			for(int j = 0; j < sizeX; ++j)
-			{
-				_mat.array[i][j] = array[i][j].plus(o.array[i][j]);
-			}
-		}
+        for (int i = 0; i < sizeY; ++i) {
+            for (int j = 0; j < sizeX; ++j) {
+                if (!array[i][j].equals(o.array[i][j])) {
+                    return false;
+                }
+            }
+        }
 
-		return _mat;
-	}
+        return true;
+    }
 
-	public MatrixR minus(MatrixR o)
-	{
-		return this.plus(o.multiply(-1));
-	}
+    public MatrixR plus(MatrixR o) throws SizeOfMatrixException {
+        if (sizeX != o.sizeX || sizeY != o.sizeY) {
+            throw new SizeOfMatrixException("MatrixR.plus(MatrixR): Sizes of matrices mismatches");
+        }
 
-	protected int findNonzeroCol(int startCol, int startRow)
-	{
-		for(int i = startRow; i < sizeX; ++i)
-		{
-			for(int j = startCol; j < sizeY; ++j)
-			{
-				if(!array[j][i].equals(0))
-				{
-					return i;
-				}
-			}
-		}
+        MatrixR _mat = new MatrixR(sizeY, sizeX);
 
-		return -1;
-	}
+        for (int i = 0; i < sizeY; ++i) {
+            for (int j = 0; j < sizeX; ++j) {
+                _mat.array[i][j] = array[i][j].plus(o.array[i][j]);
+            }
+        }
 
-	protected void evalRank()
-	{
-		MatrixR _mat = new MatrixR(this);
-		
-		for(int i = 0; i < sizeY; ++i)
-		{
-			int rowInd = 0;
-			boolean flag = false;
-			int col = _mat.findNonzeroCol(i, i);
+        return _mat;
+    }
 
-			if(col == -1)
-			{
-				break;
-			}
-			else if(col != i)
-			{
-				for(int j = 0; j < sizeY; ++j)
-				{
-					Rational.swap(_mat.at(j, col), _mat.at(j, i));
-				}
-			}
+    public MatrixR minus(MatrixR o) throws SizeOfMatrixException {
+        return this.plus(o.multiply(-1));
+    }
 
-			for(int j = i; j < sizeY; ++j)
-			{
-				if(!_mat.at(j, i).equals(0))
-				{
-					rowInd = j;
-					break;
-				}
-			}
+    public int findNonzeroCol(int startCol, int startRow) {
+        for (int i = startRow; i < sizeX; ++i) {
+            for (int j = startCol; j < sizeY; ++j) {
+                if (!array[j][i].equals(0)) {
+                    return i;
+                }
+            }
+        }
 
-			if(rowInd != i)
-			{
-				for(int j = i; j < sizeX; ++j)
-				{
-					Rational.swap(_mat.at(i, j), _mat.at(rowInd, j));
-				}
-			}
-			
-			Rational _r = new Rational(_mat.at(i, i));
-						
-			for(int j = i; j < sizeX; ++j)
-			{
-				_mat.set(i, j, _mat.at(i, j).divide(_r));
-			}
+        return -1;
+    }
 
-			for(int j = i+1; j < sizeY; ++j)
-			{
-				_r.assign(_mat.at(j, i));
+    protected void evalRank() throws SizeOfMatrixException{
+        MatrixR _mat = new MatrixR(this);
 
-				for(int k = i; k < sizeX; ++k)
-				{
-					_mat.set(j, k, _mat.at(j, k).minus( _r.multiply(_mat.at(i, k))));
-				}
-			}
-		}
+        for (int i = 0; i < sizeY; ++i) {
+            int rowInd = 0;
+            boolean flag = false;
+            int col = _mat.findNonzeroCol(i, i);
 
-		rank = 0;
-		int maxRank = (sizeX < sizeY) ? sizeX : sizeY;
+            if (col == -1) {
+                break;
+            } else if (col != i) {
+                for (int j = 0; j < sizeY; ++j) {
+                    Rational.swap(_mat.at(j, col), _mat.at(j, i));
+                }
+            }
 
-		for(int i = 0; i < maxRank; ++i)
-		{
-			if(!_mat.at(i, i).equals(0))
-			{
-				rank++;
-			}
-		}
-	}
+            for (int j = i; j < sizeY; ++j) {
+                if (!_mat.at(j, i).equals(0)) {
+                    rowInd = j;
+                    break;
+                }
+            }
 
-	public int getSizeX()
-	{
-		return sizeX;
-	}
+            if (rowInd != i) {
+                for (int j = i; j < sizeX; ++j) {
+                    Rational.swap(_mat.at(i, j), _mat.at(rowInd, j));
+                }
+            }
 
-	public int getSizeY()
-	{
-		return sizeY;
-	}
+            Rational _r = new Rational(_mat.at(i, i));
 
-	public int getRank()
-	{
-		this.evalRank();
+            for (int j = i; j < sizeX; ++j) {
+                _mat.set(i, j, _mat.at(i, j).divide(_r));
+            }
 
-		return rank;
-	}
+            for (int j = i + 1; j < sizeY; ++j) {
+                _r.assign(_mat.at(j, i));
 
-	public void clear()
-	{
-		for(int i = 0; i < sizeY; ++i)
-		{
-			for(int j = 0; j < sizeX; ++j)
-			{
-				array[i][j] = new Rational(0);
-			}
-		}
-	}
+                for (int k = i; k < sizeX; ++k) {
+                    _mat.set(j, k, _mat.at(j, k).minus(_r.multiply(_mat.at(i, k))));
+                }
+            }
+        }
 
-	public void watch()
-	{
-		for(int i = 0; i < sizeY; ++i)
-		{
-			for(int j = 0; j < sizeX; ++j)
-			{
-				System.out.print(array[i][j] + " ");
-			}
-			System.out.println();
-		}
-	}
+        rank = 0;
+        int maxRank = Math.min(sizeX, sizeY);
+
+        for (int i = 0; i < maxRank; ++i) {
+            if (!_mat.at(i, i).equals(0)) {
+                rank++;
+            }
+        }
+    }
+
+    public int getSizeX() {
+        return sizeX;
+    }
+
+    public int getSizeY() {
+        return sizeY;
+    }
+
+    public int getRank() throws SizeOfMatrixException{
+        this.evalRank();
+
+        return rank;
+    }
+
+    public void clear() {
+        for (int i = 0; i < sizeY; ++i) {
+            for (int j = 0; j < sizeX; ++j) {
+                array[i][j] = new Rational(0);
+            }
+        }
+    }
+
+    public void watch() {
+        for (int i = 0; i < sizeY; ++i) {
+            for (int j = 0; j < sizeX; ++j) {
+                System.out.print(array[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
 }
