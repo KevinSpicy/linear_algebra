@@ -3,6 +3,8 @@ package Solvers;
 import Matrices.*;
 import MatrixExceptions.SizeOfMatrixException;
 
+import java.util.Arrays;
+
 public abstract class Solver {
     public enum SolutionId {
         SINGLE, INFINITE, NONE
@@ -29,12 +31,8 @@ public abstract class Solver {
         return cntVars;
     }
 
-    public void getPermVars(int[] buff) {
-        buff = new int[cntVars + 1];
-
-        for (int i = 0; i < cntVars + 1; ++i) {
-            buff[i] = permVars[i];
-        }
+    public int[] getPermVars() {
+        return Arrays.copyOf(permVars, permVars.length);
     }
 
     public abstract SolutionId solve(MatrixR mat, MatrixR rightPart) throws SizeOfMatrixException;

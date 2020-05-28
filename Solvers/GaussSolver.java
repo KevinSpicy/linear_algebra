@@ -20,7 +20,7 @@ public class GaussSolver extends Solver {
         cntVars = 0;
 
         if (mat.getSizeY() != rightPart.getSizeY()) {
-            //Exception
+            throw new SizeOfMatrixException("GaussSolver.solve(MatrixR, MatrixR): Sizes of matrix and vector mismatch");
         }
 
         MatrixR m = new MatrixR(mat);
@@ -50,7 +50,7 @@ public class GaussSolver extends Solver {
             }
 
             for (int j = i; j < m.getSizeY(); ++j) {
-                if (!m.at(i, j).equals(0)) {
+                if (!m.at(j, i).equals(0)) {
                     rowInd = j;
                     break;
                 }
@@ -92,7 +92,7 @@ public class GaussSolver extends Solver {
             }
         }
 
-        for (int i = m.getSizeX() - 1; i > _rank; --i) {
+        for (int i = m.getSizeX(); i > _rank; --i) {
             permVars[i] = permVars[i - 1];
         }
         permVars[_rank] = -1;

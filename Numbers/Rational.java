@@ -168,18 +168,32 @@ public class Rational implements MyNumber<Rational> {
     public boolean le(Rational o) {
         return this.lt(o) || this.equals(o);
     }
-
     public boolean gt(Rational o) {
         return !this.le(o);
     }
-
     public boolean ge(Rational o) {
         return !this.lt(o);
     }
 
+    public boolean lt(long o) {
+        Rational tmp = this.minus(o);
+
+        return (tmp.sign == -1);
+    }
+
+    public boolean le(long o) {
+        return this.lt(o) || this.equals(o);
+    }
+    public boolean gt(long o) {
+        return !this.le(o);
+    }
+    public boolean ge(long o) {
+        return !this.lt(o);
+    }
+
     ////
-    public static Rational Abs(Rational o) {
-        return (o.sign == -1) ? new Rational(-o.num, o.dom) : new Rational(o.num, o.dom);
+    public static Rational abs(Rational o) {
+        return new Rational(o.num, o.dom);
     }
 
     public static void swap(Rational o1, Rational o2) {
